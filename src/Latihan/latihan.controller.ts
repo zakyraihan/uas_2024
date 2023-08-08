@@ -1,7 +1,10 @@
 import {Controller, Get, Post ,Delete, Patch ,Put, Body, Param, Query } from '@nestjs/common';
+import { LatihanService } from './latihan.service';
 
 @Controller('latihan')
 export class LatihanController {
+    constructor (private latihanService : LatihanService ) {}
+
     @Get()
     findAll(@Query() query: any){
         return {
@@ -12,9 +15,7 @@ export class LatihanController {
     @Post()
     create(@Body() payload: any){
         console.log('payload', payload)
-        return {
-            payload:payload,
-        };
+        return this.latihanService.hello();
     }
 
     @Post('create')
