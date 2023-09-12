@@ -1,61 +1,107 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { ResponseSuccess } from 'src/interface';
 import { title } from 'process';
+import { CreateBookDto } from './book.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Book } from './book.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class BookService {
-    private books : {
-        id? : number;
-        title : string;
-        author : string;
-        year : number;
-    } [] = [
-        {
-            id : 1,
-            title : 'HTML CSS',
-            author : 'fatih al hijri',
-            year : 2023,
+  constructor(
+    @InjectRepository(Book) private readonly bookRepository: Repository<Book>,
+  ) {}
 
-        },
-    ];
+  private books: {
+    id?: number;
+    title: string;
+    author: string;
+    year: number;
+  }[] = [
+    {
+      id: 1,
+      title: 'nextjs',
+      author: 'fatih al hijri',
+      year: 2023,
+    },
+  ];
 
-    getAllBook() : {
-        id? : number;
-        title : string;
-        author : string;
-        year : number;
-    }[] {
-        return this.books;
+  async getAllBook(): Promise<ResponseSuccess> {
+    const book = await this.bookRepository.find();
+    return {
+      status: 'ok',
+      message: 'berhasil',
+      data: book,
+    };
+  }
+
+  async createBook(payload: CreateBookDto): Promise<ResponseSuccess> {
+    try {
+      console.log('pay', payload);
+      const { title, author, year } = payload;
+
+      const bookSave = await this.bookRepository.save({
+        title: title,
+        author: author,
+        year: year,
+      });
+
+      return {
+        status: 'ok',
+        message: 'berhasil',
+        data: bookSave,
+      };
+    } catch {
+      console.log('masuk sini');
+      throw new HttpException('ada kesalahan', HttpStatus.BAD_REQUEST);
     }
+  }
 
-    createBook(payload:any): { status : string; message: string} {
-        console.log('pay',payload);
+  getDetail(id: number): {
+    id?: number;
+    title: string;
+    author: string;
+    year: number;
+  } {
+    const bookIndex = this.findBookById(id);
+    console.log('book index', bookIndex);
+    const book = this.books[bookIndex];
 
-        // const title = payload.title;
-        // const author = payload.author;
-        // const year = payload.year;
+    return book;
+  }
 
-        const {title, author, year} = payload;
-        this.books.push({
-            id :new Date().getTime(),
-            title : title,
-            author : author,
-            year : year,
-        });
+  updateBook(id: number, payload: any): ResponseSuccess {
+    const { title, author, year } = payload;
+    const bookIndex = this.findBookById(id);
+    this.books[bookIndex].title = title;
+    this.books[bookIndex].author = author;
+    this.books[bookIndex].year = year;
+    return {
+      status: 'ok',
+      message: 'berhasil memperbarui buku',
+    };
+  }
 
-        return {
-            status: 'ok',
-            message : 'berhasil'
-        };
+  deleteBook(id: number): ResponseSuccess {
+    const bookIndex = this.findBookById(id);
+    this.books.splice(bookIndex, 1);
+    return {
+      status: 'ok',
+      message: 'berhasil menghapus buku',
+    };
+  }
 
+  private findBookById(id: number) {
+    const bookIndex = this.books.findIndex((book) => book.id === id);
+
+    if (bookIndex === -1) {
+      throw new NotFoundException(`buku dengan ${id} tidak ditemukan `);
     }
-    findBookById(id:number){
-        const bookIndex = this.books.findIndex((book) => book.id === id);
-
-        if (bookIndex ===-1){
-            throw new NotFoundException(`buku dengan ${id} tidak ditemukan `);
-        }
-        return bookIndex;
-
-    }
-
+    return bookIndex;
+  }
 }
