@@ -20,7 +20,7 @@ export class LatihanDto {
 
 export class CreateApiDto extends OmitType(LatihanDto,['id']) {}
 
-export class UpdateApi extends PickType(LatihanDto,[
+export class UpdateApiDto extends PickType(LatihanDto,[
     'title',
     'author',
     'year',

@@ -13,8 +13,9 @@ export class Book extends BaseEntity {
 
   @Column()
   year: number;
-//   @Column({type:"text"})
-//   deskripsi:string
+
+  // @Column({nullable:false})
+  // deskripsi:string
 
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
   created_at: Date;

@@ -59,7 +59,7 @@ export class LatihanApiService {
         }
     }
 
-    getDetail(id:number) : {
+     getDetail(id:number) : {
         id?:number,
         nama:string,
         email:string,

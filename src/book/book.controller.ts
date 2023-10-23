@@ -1,13 +1,16 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { BookService } from './book.service';
-import { CreateBookDto, UpdateBookDto } from './book.dto';
+import { CreateArrayDto, CreateBookDto, FindBookDto, UpdateBookDto } from './book.dto';
+import { Pagination } from 'src/utils/decorator/pagination.decorator';
 
 @Controller('book')
 export class BookController {
     constructor (private bookService : BookService) {}
+
     @Get('list')
-    getAllBook(){
-        return this.bookService.getAllBook();
+    getAllBook(@Pagination() findBookDto:FindBookDto){
+        console.log('findbookdto',findBookDto);
+        return this.bookService.getAllBook(findBookDto);
     }
 
     @Post('create')
@@ -31,6 +34,17 @@ export class BookController {
     deleteBook(@Param('id') id:string ){
         return this.bookService.deleteBook(+id)
     }
+
+    @Post('create/bulk')
+    createBulk(@Body() payload:CreateArrayDto){
+        console.log('pay',payload)
+        return this.bookService.bulkCreate(payload);
+    }
+
+    // @Post('delete/bulk')
+    // deleteBook(@Param('id') id:string){
+    //     return
+    // }
     
 
 
