@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { BookService } from './book.service';
-import { CreateArrayDto, CreateBookDto, FindBookDto, UpdateBookDto } from './book.dto';
+import { CreateArrayDto, CreateBookDto, DeleteArrayDto, FindBookDto, UpdateBookDto } from './book.dto';
 import { Pagination } from 'src/utils/decorator/pagination.decorator';
 
 @Controller('book')
@@ -41,10 +41,10 @@ export class BookController {
         return this.bookService.bulkCreate(payload);
     }
 
-    // @Post('delete/bulk')
-    // deleteBook(@Param('id') id:string){
-    //     return
-    // }
+    @Post('delete/bulk')
+    deleteBulkBook(@Body() payload:DeleteArrayDto){
+        return this.bookService.bulkDelete(payload);
+    }
     
 
 

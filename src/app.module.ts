@@ -7,9 +7,10 @@ import { LatihanApiModule } from './latihan-api/latihan-api.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfig } from './config/typeorm.config';
 import { AuthModule } from './app/auth/auth.module';
+import { MailModule } from './app/mail/mail.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(typeOrmConfig),LatihanModule, BookModule, LatihanApiModule, AuthModule],
+  imports: [TypeOrmModule.forRoot(typeOrmConfig),LatihanModule, BookModule, LatihanApiModule, AuthModule, MailModule],
   controllers: [AppController],
   providers: [AppService],
 })
