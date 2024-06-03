@@ -1,27 +1,27 @@
-import { OmitType, PickType } from "@nestjs/mapped-types";
-import { IsInt, IsNotEmpty, IsNumber, Length, Max, Min } from "class-validator";
+import { OmitType, PickType } from '@nestjs/mapped-types';
+import { IsInt, IsNotEmpty, IsNumber, Length, Max, Min } from 'class-validator';
 
 export class LatihanDto {
-    @IsNumber()
-    id : number;
+  @IsNumber()
+  id: number;
 
-    @IsNotEmpty()
-    @Length(4,5)
-    title : string;
-    
-    @IsNotEmpty()
-    author : string;
+  @IsNotEmpty()
+  @Length(4, 5)
+  title: string;
 
-    @IsInt()
-    @Min(2020)
-    @Max(2023)
-    year : number;
+  @IsNotEmpty()
+  author: string;
+
+  @IsInt()
+  @Min(2020)
+  @Max(2023)
+  year: number;
 }
 
-export class CreateApiDto extends OmitType(LatihanDto,['id']) {}
+export class CreateApiDto extends OmitType(LatihanDto, ['id']) {}
 
-export class UpdateApiDto extends PickType(LatihanDto,[
-    'title',
-    'author',
-    'year',
+export class UpdateApiDto extends PickType(LatihanDto, [
+  'title',
+  'author',
+  'year',
 ]) {}

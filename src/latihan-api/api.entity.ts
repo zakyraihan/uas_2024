@@ -1,6 +1,5 @@
 // import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-
 // @Entity()
 // export class Api extends BaseEntity{
 //     @PrimaryGeneratedColumn()
@@ -20,7 +19,6 @@
 
 //     @Column()
 //     status:string;
-
 
 //     @Column({type:'datetime',default:() => 'CURRENT_TIMESTAMP'})
 //     created_at:Date;

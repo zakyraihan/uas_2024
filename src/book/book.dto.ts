@@ -1,4 +1,15 @@
-import { IsArray, IsInt, IsNotEmpty, IsNumber, IsOptional, Length, Max, Min, ValidateNested, isArray } from 'class-validator';
+import {
+  IsArray,
+  IsInt,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  Length,
+  Max,
+  Min,
+  ValidateNested,
+  isArray,
+} from 'class-validator';
 import { OmitType, PickType } from '@nestjs/mapped-types';
 import { Type } from 'class-transformer';
 import { PageRequestDto } from 'src/utils/dto/page.dto';
@@ -21,17 +32,17 @@ export class BookDto {
 }
 
 export class CreateBookDto extends OmitType(BookDto, ['id']) {}
-export class UpdateBookDto extends PickType(BookDto,[
-    'title',
-    'author',
-    'year',
-] ) {}
+export class UpdateBookDto extends PickType(BookDto, [
+  'title',
+  'author',
+  'year',
+]) {}
 
 export class CreateArrayDto {
   @IsArray()
   @ValidateNested()
-  @Type(()=> CreateBookDto)
-  data:CreateBookDto[];
+  @Type(() => CreateBookDto)
+  data: CreateBookDto[];
 }
 
 export class DeleteArrayDto {
@@ -56,9 +67,6 @@ export class FindBookDto extends PageRequestDto {
   @Type(() => Number)
   to_year: number;
 }
-
-
-
 
 // export class DeleteMultiDto{
 //   @IsArray()

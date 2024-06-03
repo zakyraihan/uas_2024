@@ -11,7 +11,7 @@ import { ResetPassword } from '../mail/reset_password.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User,ResetPassword]),
+    TypeOrmModule.forFeature([User, ResetPassword]),
     JwtModule.register({
       global: true,
       signOptions: {

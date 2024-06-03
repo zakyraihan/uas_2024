@@ -13,7 +13,7 @@ import { compare, hash } from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { access } from 'fs';
-import { jwt_config } from 'src/config/jwt.config';
+import { jwt_config, jwt_config1 } from 'src/config/jwt.config';
 import { MailService } from '../mail/mail.service';
 import { randomBytes } from 'crypto';
 import { ResetPassword } from '../mail/reset_password.entity';
@@ -56,6 +56,7 @@ export class AuthService extends BaseResponse {
         email: true,
         password: true,
         refresh_token: true,
+        avatar: true,
       },
     });
 
@@ -81,12 +82,12 @@ export class AuthService extends BaseResponse {
       const access_token = await this.generateJWT(
         jwtPayload,
         '1d',
-        jwt_config.access_token_secret,
+        jwt_config1.access_token_secret,
       );
       const refresh_token = await this.generateJWT(
         jwtPayload,
-        '7d',
-        jwt_config.refresh_token_secret,
+        '1d',
+        jwt_config1.refresh_token_secret,
       );
       await this.authRepository.save({
         refresh_token: refresh_token,
@@ -96,6 +97,7 @@ export class AuthService extends BaseResponse {
         ...checkUserExists,
         access_token: access_token,
         refresh_token: refresh_token,
+        role: 'admin',
       });
     } else {
       throw new HttpException(
@@ -154,13 +156,13 @@ export class AuthService extends BaseResponse {
     const access_token = await this.generateJWT(
       jwtPayload,
       '1m',
-      jwt_config.access_token_secret,
+      jwt_config1.access_token_secret,
     );
 
     const refresh_token = await this.generateJWT(
       jwtPayload,
       '10d',
-      jwt_config.refresh_token_secret,
+      jwt_config1.refresh_token_secret,
     );
 
     await this.authRepository.save({
@@ -190,7 +192,7 @@ export class AuthService extends BaseResponse {
     }
 
     const token = randomBytes(32).toString('hex'); // membuat token
-    const link = `http://localhost:4021/auth/reset-password/${user.id}/${token}`; //membuat link untuk reset password
+    const link = `http://localhost:3010/auth/reset-pw/${user.id}/${token}`; //membuat link untuk reset password
     await this.mailService.sendForgotPassword({
       email: email,
       name: user.nama,
@@ -214,7 +216,8 @@ export class AuthService extends BaseResponse {
     token: string,
     payload: ResetPasswordDto,
   ): Promise<ResponseSuccess> {
-    const userToken = await this.resetPasswordRepository.findOne({    //cek apakah user_id dan token yang sah pada tabel reset password
+    const userToken = await this.resetPasswordRepository.findOne({
+      //cek apakah user_id dan token yang sah pada tabel reset password
       where: {
         token: token,
         user: {
@@ -223,19 +226,24 @@ export class AuthService extends BaseResponse {
       },
     });
 
+    console.log('err', userToken);
+
     if (!userToken) {
       throw new HttpException(
         'Token tidak valid',
-        HttpStatus.UNPROCESSABLE_ENTITY,  // jika tidak sah , berikan pesan token tidak valid
+        HttpStatus.UNPROCESSABLE_ENTITY, // jika tidak sah , berikan pesan token tidak valid
       );
     }
 
     payload.new_password = await hash(payload.new_password, 12); //hash password
-    await this.authRepository.save({  // ubah password lama dengan password baru
+    await this.authRepository.save({
+      // ubah password lama dengan password baru
       password: payload.new_password,
       id: user_id,
     });
-    await this.resetPasswordRepository.delete({ // hapus semua token pada tabel reset password yang mempunyai user_id yang dikirim, agar tidak bisa digunakan kembali
+
+    await this.resetPasswordRepository.delete({
+      // hapus semua token pada tabel reset password yang mempunyai user_id yang dikirim, agar tidak bisa digunakan kembali
       user: {
         id: user_id,
       },
@@ -243,7 +251,4 @@ export class AuthService extends BaseResponse {
 
     return this._success('Reset Passwod Berhasil, Silahkan login ulang');
   }
-
 }
-
-

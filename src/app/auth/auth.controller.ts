@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto, RegisterDto, ResetPasswordDto } from './auth.dto';
 import { JwtGuard, JwtGuardRefreshToken } from './auth.guard';
@@ -18,13 +26,13 @@ export class AuthController {
 
   @UseGuards(JwtGuard)
   @Get('profile')
-  async profile(@Req() req){
-    console.log('informasi user logain',req.user)
+  async profile(@Req() req) {
+    console.log('informasi user logain', req.user);
     // const id = req.user.id;
-    const {id} = req.user
+    const { id } = req.user;
     return this.authService.myProfile(id);
   }
-  
+
   @UseGuards(JwtGuardRefreshToken)
   @Get('refresh-token')
   async refreshToken(@Req() req) {
@@ -40,16 +48,15 @@ export class AuthController {
     return this.authService.forgotPassword(email);
   }
 
-  
   // const link = `http://localhost:5002/auth/reset-password/${user.id}/${token}`;
 
-  @Post('reset-password/:user_id/:token')  // url yang dibuat pada endpont harus sama dengan ketika kita membuat link pada service forgotPassword
+  @Post('reset-password/:user_id/:token') // url yang dibuat pada endpont harus sama dengan ketika kita membuat link pada service forgotPassword
   async resetPassword(
     @Param('user_id') user_id: string,
     @Param('token') token: string,
     @Body() payload: ResetPasswordDto,
   ) {
+    console.log('yeeeeee');
     return this.authService.resetPassword(+user_id, token, payload);
   }
-  
 }

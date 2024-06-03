@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class LatihanService {
-    hello (){
-        return 'hello world'
-    }
-    tes(){
-        return 'ini tesssss'
-    }
+  hello() {
+    return 'hello world';
+  }
+  tes() {
+    return 'ini tesssss';
+  }
 }

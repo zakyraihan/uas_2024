@@ -6,18 +6,24 @@ import {
 } from '@nestjs/common';
 import { ResponsePagination, ResponseSuccess } from 'src/interface';
 import { title } from 'process';
-import { CreateArrayDto, CreateBookDto, DeleteArrayDto, FindBookDto, UpdateBookDto } from './book.dto';
+import {
+  CreateArrayDto,
+  CreateBookDto,
+  DeleteArrayDto,
+  FindBookDto,
+  UpdateBookDto,
+} from './book.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Book } from './book.entity';
 import { Between, Like, Repository } from 'typeorm';
 import BaseResponse from 'src/utils/response/base.response';
 
 @Injectable()
-export class BookService extends BaseResponse{
+export class BookService extends BaseResponse {
   constructor(
     @InjectRepository(Book) private readonly bookRepository: Repository<Book>,
   ) {
-    super()
+    super();
   }
 
   private books: {
@@ -29,16 +35,17 @@ export class BookService extends BaseResponse{
     {
       id: 1,
       title: 'nextjs',
-      author: 'fatih al hijri',
+      author: 'zahid maulana',
       year: 2023,
     },
   ];
 
-  async getAllBook(findBookDto:FindBookDto): Promise<ResponsePagination> {
-    const {page,pageSize,title,author ,from_year,to_year,limit} = findBookDto;
+  async getAllBook(findBookDto: FindBookDto): Promise<ResponsePagination> {
+    const { page, pageSize, title, author, from_year, to_year, limit } =
+      findBookDto;
 
-    const filter :{
-      [key:string]:any;
+    const filter: {
+      [key: string]: any;
     } = {};
 
     if (title) {
@@ -56,24 +63,24 @@ export class BookService extends BaseResponse{
       filter.year = Between(from_year, from_year);
     }
 
-    console.log('filter',filter);
+    console.log('filter', filter);
 
     const total = await this.bookRepository.count({
-      where:filter,
+      where: filter,
     });
     const book = await this.bookRepository.find({
-      where:filter,
-      skip:limit,
-      take :pageSize,
+      where: filter,
+      skip: limit,
+      take: pageSize,
     });
-    return this._pagination('berhasil',book,total,page,pageSize)
+    return this._pagination('berhasil', book, total, page, pageSize);
     return {
       status: 'ok',
       message: 'berhasil hehe',
       data: book,
       pagination: {
         total: total,
-        total_page:Math.ceil(total/pageSize),
+        total_page: Math.ceil(total / pageSize),
         page: page,
         pageSize: pageSize,
       },
@@ -91,7 +98,7 @@ export class BookService extends BaseResponse{
         year: year,
       });
 
-      return this._success('berhasil ya',bookSave)
+      return this._success('berhasil ya', bookSave);
       return {
         status: 'ok',
         message: 'berhasil',
@@ -203,7 +210,7 @@ export class BookService extends BaseResponse{
   }
 
   async bulkDelete(payload: DeleteArrayDto): Promise<ResponseSuccess> {
-    console.log('pay',payload)
+    console.log('pay', payload);
     try {
       let berhasil = 0;
       let gagal = 0;

@@ -10,18 +10,17 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Get('list') 
-  belajarRouting(){
+  @Get('list')
+  belajarRouting() {
     return 'belajarRouting hello';
   }
 
   @Post('create')
-  create(){
-    return 'belajar routing dengan method POST'
+  create() {
+    return 'belajar routing dengan method POST';
   }
   @Post('helo')
-  helo(){
-    return 'hehe'
+  helo() {
+    return 'hehe';
   }
-
 }
