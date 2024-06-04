@@ -18,10 +18,10 @@ import { JwtGuard } from '../auth/auth.guard';
 export class ProdukController {
   constructor(private readonly produkService: ProdukService) {}
 
-  @Get()
-  findAll() {
-    return this.produkService.findAll();
-  }
+  // @Get()
+  // findAll() {
+  //   return this.produkService.findAll();
+  // }
 
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {

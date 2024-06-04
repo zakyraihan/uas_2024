@@ -1,4 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity('pelanggan')
 export class Pelanggan {
@@ -13,4 +19,10 @@ export class Pelanggan {
 
   @Column({ length: 15 })
   nomorTelepon: string;
+
+  @CreateDateColumn()
+  create_at: Date;
+
+  @UpdateDateColumn()
+  updated_at: Date;
 }

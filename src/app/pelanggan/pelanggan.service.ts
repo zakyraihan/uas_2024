@@ -84,7 +84,7 @@ export class PelangganService extends BaseResponse {
         namaPelanggan: true,
         alamat: true,
         nomorTelepon: true,
-        created_at: true,
+        create_at: true,
         updated_at: true,
       },
       skip: limit,

@@ -38,8 +38,9 @@ export class PenjualanService extends BaseResponse {
     const result = await this.penjualanRepository.save(penjualan);
     return this._success('oke', result);
   }
+
   async getAllTugas(query: PenjualanDto): Promise<ResponsePagination> {
-    const { page, pageSize, limit, tanggalPenjualan } = query;
+    const { page = 1, pageSize = 10, tanggalPenjualan } = query;
 
     const filterQuery: any = {};
     if (tanggalPenjualan) {
@@ -48,7 +49,7 @@ export class PenjualanService extends BaseResponse {
 
     const total = await this.penjualanRepository.count({ where: filterQuery });
 
-    console.log('Qwery', filterQuery);
+    const skip = (page - 1) * pageSize;
 
     const result = await this.penjualanRepository.find({
       where: filterQuery,
@@ -61,7 +62,7 @@ export class PenjualanService extends BaseResponse {
         created_at: true,
         updated_at: true,
       },
-      skip: limit,
+      skip,
       take: pageSize,
     });
 

@@ -1,4 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { DetailPenjualan } from '../detailpenjualan/detailpenjualan.entity';
 
 @Entity('penjualan')
@@ -19,4 +26,10 @@ export class Penjualan {
 
   @Column()
   pelangganID: number;
+
+  @CreateDateColumn()
+  created_at: Date;
+
+  @UpdateDateColumn()
+  updated_at: Date;
 }

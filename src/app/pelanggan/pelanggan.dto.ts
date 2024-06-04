@@ -1,4 +1,6 @@
 import { IsString, IsNotEmpty, IsOptional, Length } from 'class-validator';
+import { PageRequestDto } from 'src/utils/dto/page.dto';
+import BaseResponse from 'src/utils/response/base.response';
 
 export class CreatePelangganDto {
   @IsString()
@@ -14,6 +16,12 @@ export class CreatePelangganDto {
   @IsNotEmpty()
   @Length(1, 15)
   readonly nomorTelepon: string;
+
+  @IsOptional()
+  readonly create_at: Date;
+
+  @IsOptional()
+  readonly update_at: Date;
 }
 
 export class UpdatePelangganDto {
@@ -30,4 +38,10 @@ export class UpdatePelangganDto {
   @IsOptional()
   @Length(1, 15)
   readonly nomorTelepon?: string;
+}
+
+export class findAllTugas extends PageRequestDto {
+  @IsOptional()
+  @IsString()
+  namaPelanggan: string;
 }
