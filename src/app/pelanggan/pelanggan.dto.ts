@@ -32,7 +32,7 @@ export class UpdatePelangganDto {
 
   @IsString()
   @IsOptional()
-  readonly alamat?: string;
+  readonly alamat: string;
 
   @IsString()
   @IsOptional()
@@ -40,7 +40,7 @@ export class UpdatePelangganDto {
   readonly nomorTelepon?: string;
 }
 
-export class findAllTugas extends PageRequestDto {
+export class findAllPelanggan extends PageRequestDto {
   @IsOptional()
   @IsString()
   namaPelanggan: string;

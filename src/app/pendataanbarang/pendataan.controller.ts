@@ -8,7 +8,8 @@ import {
   Put,
 } from '@nestjs/common';
 import { PendataanBarangService } from './pendataan.service';
-import { CreateBarangDto } from './pendataan.dto';
+import { CreateBarangDto, findAllBarang } from './pendataan.dto';
+import { Pagination } from 'src/utils/decorator/pagination.decorator';
 
 @Controller('barang')
 export class PendataanBarangController {
@@ -16,11 +17,11 @@ export class PendataanBarangController {
     private readonly pendataanBarangService: PendataanBarangService,
   ) {}
 
-  @Get()
-  getAllBarang() {
-    return this.pendataanBarangService.findAll();
+  @Get('list')
+  async findAll(@Pagination() query: findAllBarang) {
+    // console.log(query)
+    return this.pendataanBarangService.findALl(query);
   }
-
   @Get(':id')
   getBarangById(@Param('id') id: string) {
     return this.pendataanBarangService.findOne(id);
@@ -31,7 +32,7 @@ export class PendataanBarangController {
     return this.pendataanBarangService.create(createBarangDto);
   }
 
-  @Put(':id')
+  @Put('update/:id')
   updateBarang(
     @Param('id') id: string,
     @Body() updateBarangDto: CreateBarangDto,
@@ -39,8 +40,8 @@ export class PendataanBarangController {
     return this.pendataanBarangService.update(id, updateBarangDto);
   }
 
-  @Delete(':id')
+  @Delete('delete/:id')
   deleteBarang(@Param('id') id: string) {
-    return this.pendataanBarangService.remove(id);
+    return this.pendataanBarangService.deleteBarang(+id);
   }
 }

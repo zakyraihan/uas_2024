@@ -9,15 +9,17 @@ import {
 } from '@nestjs/common';
 import { PembelianService } from './pembelian.service';
 import { Pembelian } from './pembelian.entity';
-import { CreatePembelianDto } from './pembelian.dto';
+import { CreatePembelianDto, findAllPembelian } from './pembelian.dto';
+import { Pagination } from 'src/utils/decorator/pagination.decorator';
 
 @Controller('pembelian')
 export class PembelianController {
   constructor(private readonly pembelianService: PembelianService) {}
 
-  @Get()
-  findAll(): Promise<Pembelian[]> {
-    return this.pembelianService.findAll();
+  @Get('list')
+  async findAll(@Pagination() query: findAllPembelian) {
+    // console.log(query)
+    return this.pembelianService.findAll(query);
   }
 
   @Get(':id')
@@ -38,7 +40,7 @@ export class PembelianController {
     return this.pembelianService.update(+id, updatePembelianDto);
   }
 
-  @Delete(':id')
+  @Delete('delete/:id')
   remove(@Param('id') id: string): Promise<void> {
     return this.pembelianService.remove(+id);
   }

@@ -1,8 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
 import { Penjualan } from './penjualan.entity';
-import { CreatePenjualanDto, PenjualanDto } from './penjualan.dto';
+import {
+  CreatePenjualanDto,
+  PenjualanDto,
+  UpdatePenjualanDto,
+} from './penjualan.dto';
 import { ResponsePagination, ResponseSuccess } from 'src/interface';
 import BaseResponse from 'src/utils/response/base.response';
 
@@ -13,11 +17,6 @@ export class PenjualanService extends BaseResponse {
     private readonly penjualanRepository: Repository<Penjualan>,
   ) {
     super();
-  }
-
-  async findAll(): Promise<ResponseSuccess> {
-    const result = await this.penjualanRepository.find();
-    return this._success('oke', result);
   }
 
   async findOne(id: number): Promise<ResponseSuccess> {
@@ -39,7 +38,7 @@ export class PenjualanService extends BaseResponse {
     return this._success('oke', result);
   }
 
-  async getAllTugas(query: PenjualanDto): Promise<ResponsePagination> {
+  async findAll(query: PenjualanDto): Promise<ResponsePagination> {
     const { page = 1, pageSize = 10, tanggalPenjualan } = query;
 
     const filterQuery: any = {};
@@ -53,7 +52,7 @@ export class PenjualanService extends BaseResponse {
 
     const result = await this.penjualanRepository.find({
       where: filterQuery,
-      relations: ['jurusan', 'updated_by_mahasiswa'],
+      relations: ['created_by', 'updated_by'],
       select: {
         penjualanID: true,
         tanggalPenjualan: true,
@@ -67,5 +66,45 @@ export class PenjualanService extends BaseResponse {
     });
 
     return this._pagination('Okeh', result, total, page, pageSize);
+  }
+
+  async updatePenjualan(
+    id: number,
+    updatePenjualanDto: UpdatePenjualanDto,
+  ): Promise<ResponseSuccess> {
+    const check = await this.penjualanRepository.findOne({
+      where: {
+        penjualanID: id,
+      },
+    });
+
+    if (!check)
+      throw new NotFoundException(`penjualan dengan id ${id} tidak ditemukan`);
+
+    const update = await this.penjualanRepository.save({
+      ...updatePenjualanDto,
+      id: id,
+    });
+    return {
+      status: `Success `,
+      message: 'penjualan berhasil di update',
+      data: update,
+    };
+  }
+
+  async deletePenjualan(id: number): Promise<ResponseSuccess> {
+    const check = await this.penjualanRepository.findOne({
+      where: {
+        penjualanID: id,
+      },
+    });
+
+    if (!check)
+      throw new NotFoundException(`penjualan dengan id ${id} tidak ditemukan`);
+    await this.penjualanRepository.delete(id);
+    return {
+      status: `Success `,
+      message: 'Berhasil menghapus penjualan',
+    };
   }
 }

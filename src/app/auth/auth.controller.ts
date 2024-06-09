@@ -14,6 +14,7 @@ import { JwtGuard, JwtGuardRefreshToken } from './auth.guard';
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
+
   @Post('register')
   async register(@Body() payload: RegisterDto) {
     return this.authService.register(payload);

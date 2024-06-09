@@ -6,9 +6,15 @@ import {
   Patch,
   Param,
   Delete,
+  Put,
 } from '@nestjs/common';
 import { PelangganService } from './pelanggan.service';
-import { CreatePelangganDto, UpdatePelangganDto } from './pelanggan.dto';
+import {
+  CreatePelangganDto,
+  UpdatePelangganDto,
+  findAllPelanggan,
+} from './pelanggan.dto';
+import { Pagination } from 'src/utils/decorator/pagination.decorator';
 
 @Controller('pelanggan')
 export class PelangganController {
@@ -19,9 +25,10 @@ export class PelangganController {
     return this.pelangganService.create(createPelangganDto);
   }
 
-  @Get()
-  findAll() {
-    return this.pelangganService.findAll();
+  @Get('list')
+  async findAll(@Pagination() query: findAllPelanggan) {
+    // console.log(query)
+    return this.pelangganService.findAll(query);
   }
 
   @Get(':id')
@@ -29,16 +36,16 @@ export class PelangganController {
     return this.pelangganService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(
+  @Put('update/:id')
+  updateBook(
     @Param('id') id: string,
     @Body() updatePelangganDto: UpdatePelangganDto,
   ) {
-    return this.pelangganService.update(+id, updatePelangganDto);
+    return this.pelangganService.update(Number(id), updatePelangganDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.pelangganService.remove(+id);
+  @Delete('delete/:id')
+  deleteBook(@Param('id') id: string) {
+    return this.pelangganService.deletePelanggan(+id);
   }
 }

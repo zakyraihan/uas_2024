@@ -1,12 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
 import { DetailPenjualan } from './detailpenjualan.entity';
 import {
   CreateDetailPenjualanDto,
   DetailPenjualanDto,
+  FindAllPenjualan,
+  UpdateDetailPenjualanDto,
 } from './detailpenjualan.dto';
-import { ResponsePagination } from 'src/interface';
+import { ResponsePagination, ResponseSuccess } from 'src/interface';
 import BaseResponse from 'src/utils/response/base.response';
 
 @Injectable()
@@ -16,10 +18,6 @@ export class DetailPenjualanService extends BaseResponse {
     private readonly detailPenjualanRepository: Repository<DetailPenjualan>,
   ) {
     super();
-  }
-
-  findAll(): Promise<DetailPenjualanDto[]> {
-    return this.detailPenjualanRepository.find();
   }
 
   findOne(id: number): Promise<DetailPenjualanDto> {
@@ -38,7 +36,8 @@ export class DetailPenjualanService extends BaseResponse {
     const result = await this.detailPenjualanRepository.save(detailPenjualan);
     return result;
   }
-  async getList(query: DetailPenjualanDto): Promise<ResponsePagination> {
+
+  async findAll(query: FindAllPenjualan): Promise<ResponsePagination> {
     const { page, pageSize, limit, penjualanID } = query;
 
     const filterQuery: any = {};
@@ -62,11 +61,59 @@ export class DetailPenjualanService extends BaseResponse {
         subtotal: true,
         updated_at: true,
         created_at: true,
+        created_by: {
+          id: true,
+          nama: true,
+        },
+        updated_by: {
+          id: true,
+          nama: true,
+        },
       },
       skip: limit,
       take: pageSize,
     });
 
     return this._pagination('Okeh', result, total, page, pageSize);
+  }
+
+  async updateDetailPenjualan(
+    id: number,
+    updateDto: UpdateDetailPenjualanDto,
+  ): Promise<ResponseSuccess> {
+    const check = await this.detailPenjualanRepository.findOne({
+      where: {
+        detailID: id,
+      },
+    });
+
+    if (!check)
+      throw new NotFoundException(`detail dengan id ${id} tidak ditemukan`);
+
+    const update = await this.detailPenjualanRepository.save({
+      ...updateDto,
+      id: id,
+    });
+    return {
+      status: `Success `,
+      message: 'detail berhasil di update',
+      data: update,
+    };
+  }
+
+  async deleteDetailPenjualan(id: number): Promise<ResponseSuccess> {
+    const check = await this.detailPenjualanRepository.findOne({
+      where: {
+        detailID: id,
+      },
+    });
+
+    if (!check)
+      throw new NotFoundException(`detail dengan id ${id} tidak ditemukan`);
+    await this.detailPenjualanRepository.delete(id);
+    return {
+      status: `Success `,
+      message: 'Berhasil menghapus detail',
+    };
   }
 }

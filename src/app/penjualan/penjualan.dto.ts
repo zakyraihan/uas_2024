@@ -18,6 +18,17 @@ export class CreatePenjualanDto {
   @Min(1)
   readonly pelangganID: number;
 }
+export class UpdatePenjualanDto {
+  @IsDateString()
+  readonly tanggalPenjualan: string;
+
+  @IsNumber({ maxDecimalPlaces: 2 })
+  readonly totalHarga: number;
+
+  @IsInt()
+  @Min(1)
+  readonly pelangganID: number;
+}
 
 export class PenjualanDto {
   @IsOptional()

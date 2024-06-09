@@ -1,18 +1,57 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { Pembelian } from './pembelian.entity';
-import { CreatePembelianDto } from './pembelian.dto';
+import { CreatePembelianDto, findAllPembelian } from './pembelian.dto';
+import BaseResponse from 'src/utils/response/base.response';
+import { ResponsePagination } from 'src/interface';
 
 @Injectable()
-export class PembelianService {
+export class PembelianService extends BaseResponse {
   constructor(
     @InjectRepository(Pembelian)
     private pembelianRepository: Repository<Pembelian>,
-  ) {}
+  ) {
+    super();
+  }
 
-  findAll(): Promise<Pembelian[]> {
-    return this.pembelianRepository.find();
+  async findAll(query: findAllPembelian): Promise<ResponsePagination> {
+    const { page, pageSize, limit, nama } = query;
+
+    const filterQuery: any = {};
+    if (nama) {
+      filterQuery.nama = Like(`%${nama}%`);
+    }
+
+    const total = await this.pembelianRepository.count({ where: filterQuery });
+
+    console.log('Qwery', filterQuery);
+
+    const result = await this.pembelianRepository.find({
+      where: filterQuery,
+      relations: ['created_by', 'updated_by'],
+      select: {
+        id: true,
+        nama: true,
+        harga: true,
+        stok: true,
+        deskripsi: true,
+        created_by: {
+          id: true,
+          nama: true,
+        },
+        updated_by: {
+          id: true,
+          nama: true,
+        },
+        created_at: true,
+        updated_at: true,
+      },
+      skip: limit,
+      take: pageSize,
+    });
+
+    return this._pagination('Okeh', result, total, page, pageSize);
   }
 
   async findOne(id: number): Promise<Pembelian> {

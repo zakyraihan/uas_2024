@@ -5,7 +5,7 @@ import { Pelanggan } from './pelanggan.entity';
 import {
   CreatePelangganDto,
   UpdatePelangganDto,
-  findAllTugas,
+  findAllPelanggan,
 } from './pelanggan.dto';
 import { ResponsePagination, ResponseSuccess } from 'src/interface';
 import BaseResponse from 'src/utils/response/base.response';
@@ -19,10 +19,6 @@ export class PelangganService extends BaseResponse {
     super();
   }
 
-  findAll(): Promise<Pelanggan[]> {
-    return this.pelangganRepository.find();
-  }
-
   async findOne(id: number): Promise<Pelanggan> {
     const pelanggan = await this.pelangganRepository.findOne({
       where: { pelangganID: id },
@@ -33,9 +29,13 @@ export class PelangganService extends BaseResponse {
     return pelanggan;
   }
 
-  create(createPelangganDto: CreatePelangganDto): Promise<Pelanggan> {
+  async create(
+    createPelangganDto: CreatePelangganDto,
+  ): Promise<ResponseSuccess> {
     const pelanggan = this.pelangganRepository.create(createPelangganDto);
-    return this.pelangganRepository.save(pelanggan);
+    const result = await this.pelangganRepository.save(pelanggan);
+
+    return this._success('oke', result);
   }
 
   async update(
@@ -58,14 +58,23 @@ export class PelangganService extends BaseResponse {
     return this._success('berhasil', result);
   }
 
-  async remove(id: number): Promise<void> {
-    const result = await this.pelangganRepository.delete(id);
-    if (result.affected === 0) {
-      throw new NotFoundException(`Pelanggan with ID ${id} not found`);
-    }
+  async deletePelanggan(id: number): Promise<ResponseSuccess> {
+    const check = await this.pelangganRepository.findOne({
+      where: {
+        pelangganID: id,
+      },
+    });
+
+    if (!check)
+      throw new NotFoundException(`pelanggan dengan id ${id} tidak ditemukan`);
+    await this.pelangganRepository.delete(id);
+    return {
+      status: `Success `,
+      message: 'Berhasil menghapus pelanggan',
+    };
   }
 
-  async getList(query: findAllTugas): Promise<ResponsePagination> {
+  async findAll(query: findAllPelanggan): Promise<ResponsePagination> {
     const { page, pageSize, limit, namaPelanggan } = query;
 
     const filterQuery: any = {};
@@ -85,6 +94,14 @@ export class PelangganService extends BaseResponse {
         alamat: true,
         nomorTelepon: true,
         create_at: true,
+        created_by: {
+          id: true,
+          nama: true,
+        },
+        updated_by: {
+          id: true,
+          nama: true,
+        },
         updated_at: true,
       },
       skip: limit,
